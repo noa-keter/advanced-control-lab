@@ -29,7 +29,6 @@ grid on;
 title('Polynomial Fitting');
 xlabel('X Axis');
 ylabel('Y Axis');
-legend('level 3 fit', 'level 4 fit', 'level 5 fit', 'Location', 'northwest');
 
 % Adding curves to figure according to the requierments
 % The first curve is a regular curve, width 2.
@@ -38,14 +37,15 @@ plot(x_res, y3, 'b-', 'LineWidth', 2);
 plot(x_res, y4, 'r--', 'LineWidth', 2);
 % Third curve is magenta and dotted line, width 2.
 plot(x_res, y5, 'm:', 'LineWidth', 2);
-
+%Legend
+legend('level 3 fit', 'level 4 fit', 'level 5 fit', 'Location', 'northwest');
 % Fit the graph axis range to fit the curves dynamically in code
 % Setting X asix to [0,7]
 xlim([0 7]);
 
 % Fitting the Y asix based on the curves
-y_min = min([min(y3), min(y4), min(y5), min(Y)]);
-y_max = max([max(y3), max(y4), max(y5), max(Y)]);
+y_all = [y3, y4, y5, Y];
+ylim([min(y_all), max(y_all)]);
 % Setting the Y asix with the calculated values: 
 ylim([y_min, y_max]);
 
