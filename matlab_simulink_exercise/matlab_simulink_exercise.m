@@ -164,8 +164,8 @@ legend('atan', 'atan2', 'Continuous');
 m = 1; c = 4; k = 3;
 
 % Define State-Space Matrices (Observer Form)
-A = [-4 1;-3 0];
-B = [-1; 2];
+A = [0 1;-3 -4];
+B = [-1; 6];
 C = [1 0];
 D = 0;
 
@@ -202,7 +202,7 @@ legend('State-Space (\alpha_0 = 0.5)', 'Block Diagram (d\alpha_0 = 1)', 'Locatio
 % Rearranging for d_alpha/dt gives: d_alpha/dt = -4*x1 + x2 - u
 
 % Therefore, the new C and D matrices to output both variables are:
-C_new = [1 0; -4 1];
+C_new = [1 0; 0 1];
 D_new = [0; -1];
 
 disp('--- Matrices for y = [alpha; d_alpha/dt] ---');
