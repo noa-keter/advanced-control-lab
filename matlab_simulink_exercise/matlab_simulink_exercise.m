@@ -164,7 +164,7 @@ legend('atan', 'atan2', 'Continuous');
 m = 1; c = 4; k = 3;
 
 % Define State-Space Matrices (Observer Form)
-A = [-4 1; -3 0];
+A = [-4 1;-3 0];
 B = [-1; 2];
 C = [1 0];
 D = 0;
@@ -174,12 +174,113 @@ t_final = 10;
 sim_data = sim('control_model', 'ReturnWorkspaceOutputs', 'on', 'StopTime', num2str(t_final));
 
 % Plot Results
-figure('Name', 'Question 4 - Step Response', 'NumberTitle', 'off');
-plot(sim_data.tout, sim_data.yout, 'LineWidth', 2);
-grid on;
-title('Step Response Comparison');
-xlabel('Time (s)');
-ylabel('Output \alpha');
-legend('State-Space Block', 'Direct Implementation');
+figure('Name', 'System Response - Zero Initial Conditions', 'NumberTitle', 'off');
 
-%%% need to finish
+% Plot Column 2 (State-Space) and Column 3 (Direct Diagram)
+plot(sim_data.tout, sim_data.yout(:, 2:3), 'LineWidth', 2);
+grid on;
+
+title('System Response');
+xlabel('Time (s)');
+ylabel('Amplitude');
+legend('From state-space', 'Block Diagram', 'Location', 'best');
+
+% 2. Plot the results
+figure('Name', 'Question 4 - Initial Conditions', 'NumberTitle', 'off');
+
+% Plot only the State-Space and Diagram columns (ignoring the time column)
+plot(sim_data.tout, sim_data.yout(:, 2:3), 'LineWidth', 2);
+grid on;
+title('System Response with Initial Conditions');
+xlabel('Time (s)');
+ylabel('Amplitude (\alpha)');
+legend('State-Space (\alpha_0 = 0.5)', 'Block Diagram (d\alpha_0 = 1)', 'Location', 'best');
+% Find the matrixes C,D for the case of y = [alpha; d_alpha/dt]
+% We know from our state definitions:
+% x1 = alpha
+% x2 = d_alpha/dt + 4*alpha + u
+% Rearranging for d_alpha/dt gives: d_alpha/dt = -4*x1 + x2 - u
+
+% Therefore, the new C and D matrices to output both variables are:
+C_new = [1 0; -4 1];
+D_new = [0; -1];
+
+disp('--- Matrices for y = [alpha; d_alpha/dt] ---');
+disp('New C matrix:');
+disp(C_new);
+disp('New D matrix:');
+disp(D_new);
+
+% --- Question 5: Non-Linear Behaviors (3 View Modes) ---
+
+% Run the Simulink Simulation (runs for 10 seconds)
+t_final = 10;
+sim_data = sim('question5_model', 'ReturnWorkspaceOutputs', 'on', 'StopTime', num2str(t_final));
+
+% Extract time and signal data to make plotting cleaner
+time = sim_data.tout;
+signals = sim_data.yout(:, 2:6); 
+
+% ---------------------------------------------------------
+% Mode 1: With y auto range
+% ---------------------------------------------------------
+figure('Name', 'Q5 - Mode 1: Auto Range', 'NumberTitle', 'off');
+plot(time, signals, 'LineWidth', 1.5);
+grid on;
+title('Response of Non-Linear Blocks (Y Auto Range)');
+xlabel('Time (s)');
+ylabel('Amplitude');
+legend('Original Transfer Fcn', 'Saturation', 'Dead Zone', 'Backlash', 'Relay', 'Location', 'best');
+axis auto; % This tells MATLAB to automatically fit all data perfectly
+
+% ---------------------------------------------------------
+% Mode 2: With y in a range of [-0.3, 0.3]
+% ---------------------------------------------------------
+figure('Name', 'Q5 - Mode 2: Y-Limits [-0.3, 0.3]', 'NumberTitle', 'off');
+plot(time, signals, 'LineWidth', 1.5);
+grid on;
+title('Response of Non-Linear Blocks (Y Range [-0.3, 0.3])');
+xlabel('Time (s)');
+ylabel('Amplitude');
+legend('Original Transfer Fcn', 'Saturation', 'Dead Zone', 'Backlash', 'Relay', 'Location', 'best');
+ylim([-0.3, 0.3]); % This strictly limits the Y-axis to the requested range
+
+% ---------------------------------------------------------
+% Mode 3: With manual range using magnifying glass
+% ---------------------------------------------------------
+% To simulate drawing a box with the magnifying glass in Simulink, 
+% we will zoom in on both the X and Y axes to focus on a specific section.
+figure('Name', 'Q5 - Mode 3: Manual Zoom', 'NumberTitle', 'off');
+plot(time, signals, 'LineWidth', 1.5);
+grid on;
+title('Response of Non-Linear Blocks (Manual Zoom)');
+xlabel('Time (s)');
+ylabel('Amplitude');
+legend('Original Transfer Fcn', 'Saturation', 'Dead Zone', 'Backlash', 'Relay', 'Location', 'best');
+xlim([0.5, 3]);     % Zooming in on the X-axis (from 0.5s to 3s)
+ylim([-0.25, 0.3]); % Zooming in closely on the Y-axis to see the interactions
+
+% --- Question 6: Frequency Response & Sampling ---
+
+% Define the Transfer Function
+num = [-1, 2];
+den = [1, 4, 3];
+sys = tf(num, den);
+
+% Plot the Bode Response
+figure('Name', 'Question 6 - Bode Plot', 'NumberTitle', 'off');
+bode(sys);
+grid on;
+title('Bode Response of the System');
+
+% Sample 5 frequencies logarithmically between 0.5 and 100 rad/s
+w_samples = logspace(log10(0.5), log10(100), 5);
+
+% Extract the magnitude data
+[mag, phase, wout] = bode(sys, w_samples);
+gain_samples = squeeze(mag)'; % 'squeeze' flattens it, transpose makes it a row
+
+% Display the values in the Command Window
+disp('--- Q6: Sampled Data ---');
+fprintf('Frequencies (w):  %.4f,  %.4f,  %.4f,  %.4f,  %.4f\n', w_samples);
+fprintf('Absolute Gain (G): %.4f,  %.4f,  %.4f,  %.4f,  %.4f\n', gain_samples);
