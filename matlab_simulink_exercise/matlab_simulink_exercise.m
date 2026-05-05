@@ -98,20 +98,16 @@ hold off
 %%%======================== Question 3 ====================================
 % Define theta
 theta = 0:0.01:2*pi;
-
-% Example values (replace with YOUR ID digits)
+% Example values
 a = 3;
 b = 1;
 c = 8;
 d = 8;
-
 % Define rho
 rho = (a + b) + 0.5 * sin((c + d) * theta);
-
 % Convert to Cartesian
 x = rho .* cos(theta);
 y = rho .* sin(theta);
-
 % Plot the shape
 figure('Name','q3 -  shape figure','NumberTitle','off');
 plot(x, y, 'LineWidth', 2);
@@ -120,25 +116,19 @@ axis equal;
 title('Polar to Cartesian Shape');
 xlabel('x');
 ylabel('y');
-
 % Calculate the delta variable vector dx,dy
 dx = diff(x);
 dy = diff(y);
-
 % Angle using atan
 angle_atan = atan(dy ./ dx);
-
 % Angle using atan2
 angle_atan2 = atan2(dy, dx);
-
 % Plot angles
 figure('Name','q3 - angles figure','NumberTitle','off');
 hold on;
 grid on;
-
 plot(angle_atan, 'r', 'LineWidth', 1.5);
 plot(angle_atan2, 'b', 'LineWidth', 1.5);
-
 title('Angle Change Comparison');
 xlabel('Index');
 ylabel('Angle');
@@ -211,7 +201,7 @@ disp(C_new);
 disp('New D matrix:');
 disp(D_new);
 
-% --- Question 5: Non-Linear Behaviors (3 View Modes) ---
+% =============== Question 5: Non-Linear Behaviors (3 View Modes) =========
 
 % Run the Simulink Simulation (runs for 10 seconds)
 t_final = 10;
@@ -260,7 +250,7 @@ legend('Original Transfer Fcn', 'Saturation', 'Dead Zone', 'Backlash', 'Relay', 
 xlim([0.5, 3]);     % Zooming in on the X-axis (from 0.5s to 3s)
 ylim([-0.25, 0.3]); % Zooming in closely on the Y-axis to see the interactions
 
-% --- Question 6: Frequency Response & Sampling ---
+% ============= Question 6: Frequency Response & Sampling =================
 
 % Define the Transfer Function
 num = [-1, 2];
